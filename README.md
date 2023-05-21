@@ -21,7 +21,7 @@ Two types users Admin and user
    - Can view all bookings 
 
 ### Frontend
-In frontend I have integrated signin ,signup,logout,listing flights details,booking flights ,payments with backend .Usertype user dashboard alone integrated.
+In frontend I  integrated signin ,signup,logout,listing flights details,booking flights ,payments with backend .Usertype user dashboard alone integrated.
 
 ### Tech Stack
 
