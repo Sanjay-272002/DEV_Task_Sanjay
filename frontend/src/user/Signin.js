@@ -102,7 +102,7 @@ const Signin = () => {
         <div className="col-md-6 offset-sm-3 text-left">
           <form>
             <div className="form-group">
-              <label className="text-light">Email</label>
+              <label className="text-secondary">Email</label>
               <input
                 name="email"
                 className="form-control"
@@ -112,7 +112,7 @@ const Signin = () => {
               />
             </div>
             <div className="form-group">
-              <label className="text-light">password</label>
+              <label className="text-secondary">Password</label>
               <input
                 name="password"
                 className="form-control"

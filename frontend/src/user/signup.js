@@ -72,7 +72,7 @@ const Signup = ()=>{
               <div className="col-md-6 offset-sm-3 text-left">
                 <form>
                   <div className="form-group">
-                    <label className="text-light">Name</label>
+                    <label className="text-secondary">Name</label>
                     <input
                       className="form-control"
                       value={name}
@@ -81,7 +81,7 @@ const Signup = ()=>{
                     />
                   </div>
                   <div className="form-group">
-                    <label className="text-light">Email</label>
+                    <label className="text-secondary bold">Email</label>
                     <input
                       className="form-control"
                       value={email}
@@ -90,7 +90,7 @@ const Signup = ()=>{
                     />
                   </div>
                   <div className="form-group">
-                    <label className="text-light">password</label>
+                    <label className="text-secondary bold">Password</label>
                     <input
                       className="form-control"
                       value={password}
@@ -99,7 +99,7 @@ const Signup = ()=>{
                     />
                   </div>
                   <div className="form-group">
-                    <label className="text-light">user_type</label>
+                    <label className="text-secondary bold">User Role</label>
                     <select
                           className="form-control"
                           value={user_type}
