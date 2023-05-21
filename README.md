@@ -9,14 +9,14 @@ I developed all the use cases asked in the problem statement and also integrated
 
 #### Features
 Two types users Admin and user
-User Features 
+## User Features 
   - Login/Signup/Logout
   - can see list of files
   - can book flight by payment
   - can search flights 
   - booking is based on availability
   - can view user's booked history
- Admin Features
+ ## Admin Features
    - Add/View/Remove flights 
    - Can view all bookings 
 
