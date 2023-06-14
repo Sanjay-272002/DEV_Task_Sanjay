@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-from .serializers import OrderSerializer,ProductSerializer
-from .models import Order,FlightListModels
+from .serializers import OrderSerializer,ProductSerializer,SeatSerializer
+from .models import Order,FlightListModels,seats
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +11,7 @@ from rest_framework import generics
 from api.user.models import *
 from rest_framework.decorators import action
 from django.db.models import Q
+from django.core.mail import send_mail
 
 
 def validate_user_session(id, token):
@@ -38,10 +39,13 @@ class listflights(generics.ListAPIView):
 class FlightViews(APIView):
     def post(self,request):
         try:
-            id=self.request.user.id
+            id=10
+            print(id)
             user=CustomUser.objects.get(id=id)
+            print(user)
             if(user.user_type=="admin"):
                 image_file = request.FILES.get('image')
+                print(image_file)
                 flight_name=request.data.get('flight_name',None)
                 flight_no=request.data.get('flight_no',None)
                 ticket_price=request.data.get('ticket_price',None)
@@ -97,8 +101,10 @@ class CreateOrderViews(APIView):
             no_tickets=request.data.get("count",None)
             transaction_id=request.data.get("transaction_id",None)
             amount=request.data.get("amount",None)
-            print(type(flight_id),"tic",type(no_tickets),type(transaction_id),amount,type(id))
-            print(type(flight_id))
+            seat_ids= request.data.get('seat_ids', [])
+            seat_ids=seat_ids.split(",")
+            seat_ids=list(seat_ids)
+            print("seatids",seat_ids)
             if(flight_id is None and no_tickets is None):
                 return Response({'detail': 'Bad request. Missing query.'}, status=status.HTTP_400_BAD_REQUEST)
             flight=FlightListModels.objects.get(id=flight_id)
@@ -114,7 +120,18 @@ class CreateOrderViews(APIView):
             user=CustomUser.objects.get(pk=id)
             print("user",user)
             order=Order.objects.create(user=user,flight_id=flight,total_tickets=no_tickets,total_amount=amount,transaction_id=transaction_id)
+            for seat_id in seat_ids:
+                sea = seats.objects.get(id=seat_id)
+                print("sea",sea)
+                sea.is_booked=True
+                sea.save()
+                order.seats.add(sea)
+                order.save()
             serializer=OrderSerializer(order)
+            email=user.email
+            flight_name=flight.flight_name
+            htmlgen = '<p>Your Ticket is booked for flight <strong>'+flight_name+'</strong>successfully</p>'
+            send_mail('Your flight ticket',flight_name,'<gmail id>',[email],fail_silently=False,html_message=htmlgen)
             return Response({'message':"Success",'data':serializer.data},status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'Error': str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -123,8 +140,11 @@ class listorders(APIView):
     def get(self,request):
         try:
             user_id=request.query_params.get('user_id',None)
+            print("id",user_id)
             if(user_id != None):
+                print("true")
                 queryset=Order.objects.filter(user=user_id).order_by('created_at')
+                print(queryset)
                 serializer=OrderSerializer(queryset,many=True)
                 return Response({'message':"success",'data':serializer.data},status=status.HTTP_200_OK)
             elif(user_id is None):
@@ -133,6 +153,25 @@ class listorders(APIView):
                 return Response({'message':"success",'data':serializer.data},status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'Error': str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def delete(self,request):
+        try:
+            id=request.query_params.get('id')
+            queryset=Order.objects.get(id=id)
+            seat_ids = queryset.seats.values_list('id', flat=True)
+            print(seat_ids)
+            for id in seat_ids:
+                seat=seats.objects.get(id=id)
+                seat.is_booked=False
+                seat.save()
+                queryset.seats.remove(seat)
+            queryset.delete()
+            email=queryset.user.email
+            flight_name=queryset.flight_id.flight_name
+            htmlgen = '<p>Your  booked ticket for flight <strong>'+flight_name+'</strong>is cancelled due to uncertain conditions.refund will be provided.</p>'
+            send_mail('Your flight ticket',flight_name,'<gmail id>',[email],fail_silently=False,html_message=htmlgen)
+            return Response({'message':"object is deleted"},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'Error': str(e)},status=status.HTTP_404_NOT_FOUND)    
 
 class AdminViewOrders(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
@@ -163,4 +202,14 @@ class AdminViewOrders(viewsets.ViewSet):
         except Exception as e:
             return Response({'Error': str(e)},status=status.HTTP_404_NOT_FOUND)
 
+
+class listseats(APIView):
+    def get(self,request):
+        id=request.query_params.get('id')
+        print(id)
+        user=FlightListModels.objects.get(pk=id)
+        queryset= seats.objects.filter(flight=user)
+        print(queryset)
+        serializer=SeatSerializer(queryset,many=True)
+        return Response({'data':serializer.data},status=200)
 

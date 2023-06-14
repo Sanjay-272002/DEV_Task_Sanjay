@@ -12,3 +12,79 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.seat {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.selected {
+  background-color: yellow;
+}
+
+.margin{
+   margin-left: 280px;
+}
+
+.num{
+  margin-top: -50px;
+  margin-left: 510px;
+}
+
+.label{
+  color: blueviolet;
+  
+  
+}
+.labell{
+  
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.butto{
+  margin-top: 20px;
+  margin-left: 600px;
+  
+}
+.name{
+  color: white;
+  padding: 5px 5px;
+  background-color: blue;
+}
+.boxx{
+  margin-left: 480px;
+}
+
+.seatbox{
+  padding: 30px 30px;
+}
+.type{
+  margin-top:30px;
+}
+.profile{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.head{
+  text-align: center;
+  margin-left: 100px;
+}
+.box1, .box2{
+  padding: 30px 30px;
+}

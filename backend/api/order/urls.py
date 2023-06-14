@@ -9,4 +9,6 @@ urlpatterns = [
     path("listbooks/", views.listorders.as_view(), name='listbooks'),
     path("adminview/", AdminViewOrders.as_view({'get': 'search'}), name='listorders'),
     path('search/', SearchViewSet.as_view({'get': 'search'}), name='search'),
+    path('listseats/', views.listseats.as_view(), name='listseats'),
+
 ]

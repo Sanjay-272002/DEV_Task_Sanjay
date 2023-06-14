@@ -47,8 +47,15 @@ const Signin = () => {
   };
 
   const performRedirect = () => {
-    if (isAuthenticated()) {
-      return <Redirect to="/" />;
+    if (isAuthenticated() && isAuthenticated().user.user_type==="admin") {
+      console.log("admin")
+      return <Redirect to="/admin"/>;
+    }else if(isAuthenticated() && isAuthenticated().user.user_type==="user"){
+      console.log("user")
+      return <Redirect to="/"/>;
+    }else if(isAuthenticated()){
+      console.log("wrong");
+      return <Redirect to="/"/>;
     }
   };
 
@@ -128,18 +135,33 @@ const Signin = () => {
               Submit
             </button>
           </form>
-        </div>
+        </div>    
       </div>
+      
     );
   };
-
+const signupdisplay=()=>{
+  return(
+  <div className="row">
+          <div className="col-md-6 mt-4 offset-sm-3 text-left">
+              <div className=" alert alert-danger"
+              >
+                  Don't have an account
+                  <Link to="/signup">Signup now.</Link>
+              </div>
+          </div>
+      </div>
+  )
+}
   return (
-    <Base title="Welcome to sign in page" description="A tshirt store">
+    <Base title="Welcome to sign in page" description="Flight Booking App">
       {loadingMessage()}
 
       {signInForm()}
     
       {performRedirect()}
+      {signupdisplay()}
+      
     </Base>
   );
 };

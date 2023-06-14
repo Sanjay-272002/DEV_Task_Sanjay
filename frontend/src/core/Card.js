@@ -3,14 +3,18 @@ import ImageHelper from './helper/imageHelper';
 import {Redirect} from "react-router-dom"
 import { addItemToCart ,removeItemFromCart} from './helper/cartHelper';
 import { isAuthenticated } from '../auth/helper';
-
-
+import {  removebyadmin } from './helper/coreapicalls';
+import {Link} from "react-router-dom"
 const Card = ({product,addtoCart=true,
 removeFromCart=false,
+removeflight=false,
 reload=undefined,
+cancelOrder=f=>f,
 setReload = f=>f, 
 }) => {
     const [redirect,setRedirect]=useState(false)
+    const [signinredirect,setsigninRedirect]=useState(false)
+    const [adminpageredirect,setadminpageredirect]=useState(false)
     const [Alert, setAlert] = useState(false)
     const cartTitle=product?product.flight_name:"A photo from pexel"
     const flight_no =product ? product.flight_no :"222"
@@ -27,29 +31,84 @@ setReload = f=>f,
     console.log(redirect)
     const addToCart=()=>{
         if(isAuthenticated() && product.ava_seats>1){
-          addItemToCart(product,()=>setRedirect(true))
+          addItemToCart(product,()=>setRedirect(false))
+          
           console.log("Add To Cart")
+        }
+        else if(!isAuthenticated()){
+          setsigninRedirect(true)
         }else{
           setAlert(true);
         }
     }
+const removeitemadmin = (id)=>{
+  console.log(id)
+     removebyadmin(id).then(data=>{
+      console.log({data});
+      if(data.error){
+        console.log("1")
+      }else{
+        console.log("0")
+        cancelOrder(id)
+      }
+    })
+  }
     const getRedirect= redirect =>{
         if(redirect){
             return <Redirect to="/cart"/>
         }
     }
+    const getadminRedirect= adminredirect =>{
+      if(adminredirect){
+          return <Redirect to="/admin"/>
+      }
+  }
+    const getsigninredirect= signinredirect =>{
+      if(signinredirect){
+          return <Redirect to="/signin"/>
+      }
+  }
     const showAddToCart = addToCart=>{
         return(
-            addtoCart && (
+        <>
+            { addtoCart  && isAuthenticated() &&  (
+              //   <button
+              //   onClick={addToCart}
+              //   className="btn btn-block btn-outline-warning mt-2 mb-2 text-white"
+              // >
+              //   Book a Ticket
+              // </button>
+              <Link to={`/seats/${product.id}`}  onClick={addToCart} className="btn btn-block btn-outline-warning mt-2 mb-2 text-white">
+          Book a Ticket
+        </Link>
+            )}
+
+          {addtoCart   && !isAuthenticated() &&  (
                 <button
                 onClick={addToCart}
                 className="btn btn-block btn-outline-warning mt-2 mb-2 text-white"
               >
                 Book a Ticket
               </button>
-            )
+            
+            )}
+            </>
+      
         )
     };
+    const showRemoveFlight = removeflight=>{
+      return(
+          removeflight   &&(
+              <button
+              onClick={()=>{removeitemadmin(product.id)
+                setReload(redirect)}}
+              className="btn btn-block btn-outline-warning mt-2 mb-2 text-white"
+            >
+              Remove Flight
+            </button>
+          )
+      )
+  };
     const showRemoveFromCart = removeFromCart=>{
         return(
             removeFromCart &&(
@@ -71,6 +130,8 @@ setReload = f=>f,
         <div className="card-header lead">{cartTitle}</div>
         <div className="card-body">
           {getRedirect(redirect)}
+         {getsigninredirect(signinredirect)}
+         {getadminRedirect(adminpageredirect)}
           
          <ImageHelper product={product}/>
           <p className="lead  font-weight-normal text-wrap">
@@ -89,6 +150,9 @@ setReload = f=>f,
             </div>
             <div className="col-12">
               {showRemoveFromCart(removeFromCart)}
+            </div>
+            <div className="col-12">
+              {showRemoveFlight(removeflight)}
             </div>
           </div>
         </div>

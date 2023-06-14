@@ -8,18 +8,20 @@ const Signup = ()=>{
         name:"",
         email:"",
         password:"",
-        user_type:"",
+        gender:"",
+        phone:"",
         error:"",
         success:false,
     })
-    const {name,email,password,user_type,error,success}=values
+    const {name,email,password,phone,gender,error,success}=values
     const handleChange=name=>event=>{
         setValues({...values,error:false,[name]:event.target.value})
     }
     const onSubmit = (event)=>{
         event.preventDefault();
         setValues({...values,error:false})
-        signup({name,email,password,user_type}).then(data=>{
+        console.log(gender)
+        signup({name,email,password,gender,phone}).then(data=>{
             console.log("Data",data)
             if(data.email===email){
                 setValues({
@@ -27,7 +29,8 @@ const Signup = ()=>{
                     name:"",
                     email:"",
                     password:"",
-                    user_type:"",
+                    gender:"",
+                    phone:"",
                     error:"",
                     success:true
                 })
@@ -66,6 +69,19 @@ const Signup = ()=>{
             </div>
         )
     }
+    const signindisplay=()=>{
+      return(
+      <div className="row">
+              <div className="col-md-6 mt-4 offset-sm-3 text-left">
+                  <div className=" alert alert-danger"
+                  >
+                      Having an account.Pls
+                      <Link to="/signin">Signin.</Link>
+                  </div>
+              </div>
+          </div>
+      )
+    }
     const siginUpForm =()=>{
         return (
             <div className="row">
@@ -99,14 +115,24 @@ const Signup = ()=>{
                     />
                   </div>
                   <div className="form-group">
-                    <label className="text-secondary bold">User Role</label>
+                    <label className="text-secondary bold">Phone</label>
+                    <input
+                      className="form-control"
+                      value={phone}
+                      onChange={handleChange("phone")}
+                      type="tel"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="text-secondary bold">Gender:</label>
                     <select
                           className="form-control"
-                          value={user_type}
-                          onChange={handleChange("user_type")}
+                          value={gender}
+                          onChange={handleChange("gender")}
                           >
-                    <option value="admin">admin</option>
-                    <option value="user">user</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Others">Others</option>
                     </select>
                   </div>
                   <button
@@ -121,10 +147,11 @@ const Signup = ()=>{
           );
     }
     return(
-        <Base title="Sign Up Page" description="A signup for Hoodie App" >
+        <Base title="Sign Up Page" description="A signup for Flight App" >
             {successMessage()}
             {errorMessage()}
             {siginUpForm()}
+            {signindisplay()}
         </Base> 
           )
 }

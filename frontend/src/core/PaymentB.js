@@ -10,6 +10,9 @@ import DropIn from "braintree-web-drop-in-react"
 const PaymentB= (
     {
         products,
+        selectedSeats,
+        numSeatsRequired,
+        selectedSeatsname,
         reload=undefined,
         setReload = (f)=>f,
     }
@@ -50,7 +53,7 @@ const PaymentB= (
     const getAmount = ()=>{
         let amount=0;
         products.map(p =>{
-            amount= amount+parseInt(p.ticket_price)
+            amount= numSeatsRequired*parseInt(p.ticket_price)
         })
         return amount;
     }
@@ -86,9 +89,10 @@ const PaymentB= (
                 });
                 const orderData = {
                   flight_id: product_id,
-                  count:1,
+                  count:numSeatsRequired,
                   transaction_id: response.transaction.id,
                   amount: response.transaction.amount,
+                  seat_ids:selectedSeats
                 };
                 createOrder(userId, token, orderData)
                   .then((response) => {
@@ -147,7 +151,9 @@ const PaymentB= (
     }
     return(
         <div>
-            <h3>Your bill is $ {getAmount()}</h3>
+            <h3>Your bill is: $ {getAmount()}</h3>
+            <h3>Total Tickets: {numSeatsRequired}</h3>
+            <h3>Selected Seats:  {selectedSeatsname}</h3>
             {showbtnDropIn()}
         </div>
     )
